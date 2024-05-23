@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ 
+<script> const client = mqtt.connect('kafka-l7r2b7.a01.euc1.aws.hivemq.cloud:8884/mqtt'); </script>
+  <title>Self Parking Status</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background-color: #fff;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      border-radius: 5px;
+      padding: 20px;
+      width: 300px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+    }
+
+    button {
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 3px;
+      padding: 10px;
+      width: 100%;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    #content {
+      display: none;
+      margin-top: 20px;
+    }
+
+    #content h1 {
+      font-size: 24px;
+    }
+
+    #content p {
+      font-size: 16px;
+    }
+  </style>
+  <style>
+    /* Customize the appearance of the toggle button */
+    .toggle-container {
+      display: flex;
+      align-items: center;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    .toggle {
+      position: relative;
+      display: inline-block;
+      width: 60px;
+      height: 34px;
+      margin-left: 10px; /* Add space between the text and the toggle button */
+    }
+
+    /* Hide the default checkbox */
+    .toggle input {
+      display: none;
+    }
+
+    /* Styling for the track of the toggle button */
+    .toggle .track {
+      width: 100%;
+      height: 100%;
+      border-radius: 17px;
+      background-color: #ccc; /* Default track color */
+      position: absolute;
+      top: 0;
+      left: 0;
+      transition: background-color 0.3s;
+    }
+
+    /* Styling for the thumb (handle) of the toggle button */
+    .toggle .thumb {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background-color: #fff; /* Default thumb color */
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      transition: transform 0.3s, background-color 0.3s;
+    }
+
+    /* Move the thumb to the right and change colors when the checkbox is checked */
+    .toggle input:checked + .track {
+      background-color: #3cb371; /* Track color when toggled on */
+    }
+
+    .toggle input:checked + .track .thumb {
+      background-color: #008000; /* Thumb color when toggled on */
+      transform: translateX(26px);
+    }
+  </style>
+
+</head>
+<body>
+  <div class="container">
+    <div id="authForm">
+      <div class="form-group">
+        <label for="username">Username:</label>
+        <input type="text" id="username" />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" id="password" />
+      </div>
+
+      <button onclick="checkCredentials()">Submit</button>
+    </div>
+
+    <div id="content">
+
+      <h1>Self Parking Status</h1>
+      <div id="load">
+          <p>Current status: </p>
+      </div>
+      <div class="toggle-container">
+        <span>Initiate Parking Sequence:</span>
+        <label class="toggle">
+          <input type="checkbox" id="toggleCheckbox">
+          <span class="track">
+            <span class="thumb"></span>
+          </span>
+        </label>
+      </div>
+      <div class="toggle-container">
+        <span>STOP ALL ACTIVITY</span>
+        <label class="toggle">
+          <input type="checkbox" id="toggleCheckbox2">
+          <span class="track">
+            <span class="thumb"></span>
+          </span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function checkCredentials() {
+      const username = "admin"; // Replace with your desired username
+      const password = "admin"; // Replace with your desired password
+      const enteredUsername = document.getElementById("username").value;
+      const enteredPassword = document.getElementById("password").value;
+  
+      if (enteredUsername === username && enteredPassword === password) {
+        document.getElementById("authForm").style.display = "none";
+        document.getElementById("content").style.display = "block";
+      } else {
+        alert("Incorrect username or password. Please try again.");
+      }
+    }
+  
+    // Add event listeners to the input fields
+    document.getElementById("username").addEventListener("keydown", function(event) {
+      if (event.key === "Enter") {
+        event.preventDefault(); // Prevent the default form submission
+        document.getElementById("password").focus(); // Move focus to the password field
+      }
+    });
+  
+    document.getElementById("password").addEventListener("keydown", function(event) {
+      if (event.key === "Enter") {
+        event.preventDefault(); // Prevent the default form submission
+        checkCredentials();
+      }
+    });
+  </script>
+  
+  
+      <script type='text/javascript'>
+
+        function callme(){
+          //This promise will resolve when the network call succeeds
+          //Feel free to make a REST fetch using promises and assign it to networkPromise
+          var networkPromise = fetch('/get_status')
+            .then(response => response.json())
+            .then(data => {
+              console.log(data);
+              var status_element = document.getElementById('load')
+              let text = "<p> Current status: "
+              let text2 = "</p>"
+              let result = text.concat(data.status)
+              let result2 = result.concat(text2)
+              console.log(result2);
+    
+              status_element.innerHTML = result2
+            });;
+      
+      
+          //This promise will resolve when 2 seconds have passed
+          var timeOutPromise = new Promise(function(resolve, reject) {
+            // 2 Second delay
+            setTimeout(resolve, 1000, 'Timeout Done');
+          });
+      
+          Promise.all(
+          [networkPromise, timeOutPromise]).then(function(values) {
+            console.log("Atleast 2 secs + TTL (Network/server)");
+            //Repeat
+            callme();
+          });
+          }
+          callme();
+          </script>
+
+
+<script>
+  const toggleCheckbox = document.getElementById('toggleCheckbox');
+
+  toggleCheckbox.addEventListener('change', () => {
+    if (toggleCheckbox.checked) {
+      
+      var topic = 'parking';
+      var message = 'parking on';
+
+      fetch('/publish_message', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: new URLSearchParams({
+              'topic': topic,
+              'message': message,
+          }),
+      }).then(response => {
+          if (response.ok) {
+              console.log('Message published');
+          } else {
+              console.error('Failed to publish message');
+          }
+      }).catch(error => {
+          console.error('Error:', error);
+      });
+    }
+    else {
+      var topic = 'parking';
+      var message = 'parking off';
+
+      fetch('/publish_message', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: new URLSearchParams({
+              'topic': topic,
+              'message': message,
+          }),
+      }).then(response => {
+          if (response.ok) {
+              console.log('Message published');
+          } else {
+              console.error('Failed to publish message');
+          }
+      }).catch(error => {
+          console.error('Error:', error);
+      });
+    }
+  });
+</script>
+<script>
+  const toggleCheckbox2 = document.getElementById('toggleCheckbox2');
+
+  toggleCheckbox2.addEventListener('change', () => {
+    if (toggleCheckbox2.checked) {
+      
+      var topic = 'stop';
+      var message = 'stop';
+
+      fetch('/publish_message', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: new URLSearchParams({
+              'topic': topic,
+              'message': message,
+          }),
+      }).then(response => {
+          if (response.ok) {
+              console.log('Message published');
+          } else {
+              console.error('Failed to publish message');
+          }
+      }).catch(error => {
+          console.error('Error:', error);
+      });
+    } else {
+      var topic = 'stop';
+      var message = 'run';
+
+      fetch('/publish_message', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: new URLSearchParams({
+              'topic': topic,
+              'message': message,
+          }),
+      }).then(response => {
+          if (response.ok) {
+              console.log('Message published');
+          } else {
+              console.error('Failed to publish message');
+          }
+      }).catch(error => {
+          console.error('Error:', error);
+      });
+    }
+  });
+</script>
+</body>
+</html>
