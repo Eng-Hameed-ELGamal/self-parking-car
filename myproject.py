@@ -13,7 +13,7 @@ mqtt_topic = "status"
 mqtt_username = "admin"
 mqtt_password = "Admin123"
 
-latest_message = "You Are Connected"
+latest_message = ""
 
 # Callback when a new MQTT message is received
 def on_message(client, userdata, message):
