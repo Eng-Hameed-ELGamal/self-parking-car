@@ -6,9 +6,9 @@
 #include <LittleFS.h>
 #include <CertStoreBearSSL.h>
 
-const char* ssid = "Hamido"; //
-const char* password = "hameed124";
-const char* mqtt_server = "kafka-l7r2b7.a01.euc1.aws.hivemq.cloud";
+const char* ssid = "Forbiddenz"; //
+const char* password = "geraltofrivia";
+const char* mqtt_server = "project1-l7r2b7.a01.euc1.aws.hivemq.cloud";
 
 
 #define BUFFER_SIZE 400 
