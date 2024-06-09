@@ -7,7 +7,7 @@ app = Flask(__name__)
 import ssl
 
 # MQTT configurationc
-mqtt_broker = "kafka-l7r2b7.a01.euc1.aws.hivemq.cloud"
+mqtt_broker = "project1-l7r2b7.a01.euc1.aws.hivemq.cloud"
 mqtt_port = 8883
 mqtt_topic = "status"
 mqtt_username = "admin"
